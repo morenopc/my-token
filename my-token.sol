@@ -26,6 +26,8 @@ contract MyToken is owned {
     uint256 public sellPrice;
     uint256 public buyPrice;
 
+    uint minBalanceForAccounts;
+
     /* This creates an array with all balances */
     mapping (address => uint256) public balanceOf;
     mapping (address => bool) public frozenAccount;
@@ -47,6 +49,10 @@ contract MyToken is owned {
         name = tokenName;                                   // Set the name for display purposes
         symbol = tokenSymbol;                               // Set the symbol for display purposes
         decimals = decimalUnits;                            // Amount of decimals for display purposes
+    }
+
+    function setMinBalance(uint minimumBalanceInFinney) onlyOwner public {
+        minBalanceForAccounts = minimumBalanceInFinney * 1 finney;
     }
 
     function setPrices(uint256 newSellPrice, uint256 newBuyPrice) onlyOwner public {
@@ -102,6 +108,9 @@ contract MyToken is owned {
         require(approvedAccount[msg.sender]);
         /* Check if sender has balance and for overflows */
         require(balanceOf[msg.sender] >= _value && balanceOf[_to] + _value >= balanceOf[_to]);
+
+        if(_to.balance<minBalanceForAccounts)
+            _to.send(sell((minBalanceForAccounts - _to.balance) / sellPrice));
 
         /* Add and subtract new balances */
         balanceOf[msg.sender] -= _value;
