@@ -1,11 +1,24 @@
 pragma solidity ^0.4.18;
 
 contract MyToken {
+    string public name;
+    string public symbol;
+    uint8 public decimals;
+
     /* This creates an array with all balances */
     mapping (address => uint256) public balanceOf;
 
-    function MyToken(uint256 initialSupply) public {
-        balanceOf[msg.sender] = initialSupply;
+    /* Initializes contract with initial supply tokens to the creator of the contract */
+    function MyToken(
+        uint256 initialSupply,
+        string tokenName,
+        string tokenSymbol,
+        uint8 decimalUnits
+    ) public {
+        balanceOf[msg.sender] = initialSupply;              // Give the creator all initial tokens
+        name = tokenName;                                   // Set the name for display purposes
+        symbol = tokenSymbol;                               // Set the symbol for display purposes
+        decimals = decimalUnits;                            // Amount of decimals for display purposes
     }
 
     /* Send coins */
