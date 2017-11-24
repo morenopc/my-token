@@ -25,8 +25,10 @@ contract MyToken is owned {
 
     /* This creates an array with all balances */
     mapping (address => uint256) public balanceOf;
+    mapping (address => bool) public frozenAccount;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
+    event FrozenFunds(address target, bool frozen);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function MyToken(
@@ -51,6 +53,11 @@ contract MyToken is owned {
         Transfer(owner, target, mintedAmount);
     }
 
+    function freezeAccount(address target, bool freeze) onlyOwner public {
+        frozenAccount[target] = freeze;
+        FrozenFunds(target, freeze);
+    }
+
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
@@ -65,6 +72,7 @@ contract MyToken is owned {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) public {
+        require(approvedAccount[msg.sender]);
         /* Check if sender has balance and for overflows */
         require(balanceOf[msg.sender] >= _value && balanceOf[_to] + _value >= balanceOf[_to]);
 
