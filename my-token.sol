@@ -8,6 +8,8 @@ contract MyToken {
     /* This creates an array with all balances */
     mapping (address => uint256) public balanceOf;
 
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function MyToken(
         uint256 initialSupply,
@@ -29,5 +31,8 @@ contract MyToken {
         /* Add and subtract new balances */
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
+
+        /* Notify anyone listening that this transfer took place */
+        Transfer(msg.sender, _to, _value);
     }
 }
