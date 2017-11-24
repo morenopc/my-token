@@ -1,6 +1,23 @@
 pragma solidity ^0.4.18;
 
-contract MyToken {
+contract owned {
+    address public owner;
+
+    function owned() public {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
+
+    function transferOwnership(address newOwner) onlyOwner public {
+        owner = newOwner;
+    }
+}
+
+contract MyToken is owned {
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -15,8 +32,10 @@ contract MyToken {
         uint256 initialSupply,
         string tokenName,
         string tokenSymbol,
-        uint8 decimalUnits
+        uint8 decimalUnits,
+        address centralMinter
     ) public {
+        if(centralMinter != 0 ) owner = centralMinter;
         balanceOf[msg.sender] = initialSupply;              // Give the creator all initial tokens
         name = tokenName;                                   // Set the name for display purposes
         symbol = tokenSymbol;                               // Set the symbol for display purposes
