@@ -18,6 +18,7 @@ contract owned {
 }
 
 contract MyToken is owned {
+    uint256 public totalSupply;
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -36,10 +37,18 @@ contract MyToken is owned {
         address centralMinter
     ) public {
         if(centralMinter != 0 ) owner = centralMinter;
+        totalSupply = initialSupply;
         balanceOf[msg.sender] = initialSupply;              // Give the creator all initial tokens
         name = tokenName;                                   // Set the name for display purposes
         symbol = tokenSymbol;                               // Set the symbol for display purposes
         decimals = decimalUnits;                            // Amount of decimals for display purposes
+    }
+
+    function mintToken(address target, uint256 mintedAmount) onlyOwner public {
+        balanceOf[target] += mintedAmount;
+        totalSupply += mintedAmount;
+        Transfer(0, owner, mintedAmount);
+        Transfer(owner, target, mintedAmount);
     }
 
     /* Internal transfer, only can be called by this contract */
