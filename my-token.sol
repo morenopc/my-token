@@ -26,7 +26,7 @@ contract MyToken is owned {
     uint256 public sellPrice;
     uint256 public buyPrice;
 
-    uint minBalanceForAccounts;
+    uint public minBalanceForAccounts;
 
     /* This creates an array with all balances */
     mapping (address => uint256) public balanceOf;
@@ -105,12 +105,8 @@ contract MyToken is owned {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) public {
-        require(approvedAccount[msg.sender]);
         /* Check if sender has balance and for overflows */
         require(balanceOf[msg.sender] >= _value && balanceOf[_to] + _value >= balanceOf[_to]);
-
-        if(_to.balance<minBalanceForAccounts)
-            _to.send(sell((minBalanceForAccounts - _to.balance) / sellPrice));
 
         /* Add and subtract new balances */
         balanceOf[msg.sender] -= _value;
